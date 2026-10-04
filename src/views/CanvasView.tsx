@@ -1,10 +1,10 @@
 import { useRef, useState } from 'react';
 import type { Card, Link } from '../cards/types';
 import { CardView } from '../cards/CardView';
-import { CARD_W, isDrag, linkMid, startsGesture, type View } from './geometry';
+import { arrowTip, CARD_W, isDrag, startsGesture, type View } from './geometry';
 
-// ponytail: 카드 높이는 내용마다 달라 중심을 추정값으로 잡음. 선은 카드 아래에 깔려 가려지므로 충분, 테두리에서 끝나는 화살표가 필요하면 높이 측정 추가
-const CARD_H_EST = 60;
+const CARD_H_EST = 60; // 측정 전 첫 렌더용
+const ARROW_GAP = 3; // 화살촉 끝과 카드 테두리 사이 여백
 
 type Gesture =
   | { kind: 'pan'; pointerId: number; sx: number; sy: number; ox: number; oy: number; moved: boolean }
@@ -26,6 +26,13 @@ type Props = {
 export function CanvasView({ cards, links, selectedId, onBackgroundTap, view, setView, colorOf, onMove, onTap, setDragging }: Props) {
   const g = useRef<Gesture | null>(null);
   const [drag, setDrag] = useState<{ id: string; x: number; y: number } | null>(null);
+  // 카드 높이는 내용마다 달라 실제로 측정 (화살촉을 도착 카드 테두리에 붙이기 위해)
+  const [heights, setHeights] = useState<Record<string, number>>({});
+  const [observer] = useState(() => new ResizeObserver(entries => setHeights(h => {
+    const next = { ...h };
+    for (const e of entries) next[(e.target as HTMLElement).dataset.cardId!] = e.contentRect.height;
+    return next;
+  })));
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (g.current || !startsGesture(e)) return; // 두 번째 손가락, 오른쪽 클릭 무시
@@ -82,7 +89,7 @@ export function CanvasView({ cards, links, selectedId, onBackgroundTap, view, se
   const center: Record<string, { x: number; y: number }> = {};
   for (const c of cards) {
     const pos = drag?.id === c.id ? drag : c;
-    center[c.id] = { x: pos.x + CARD_W / 2, y: pos.y + CARD_H_EST / 2 };
+    center[c.id] = { x: pos.x + CARD_W / 2, y: pos.y + (heights[c.id] ?? CARD_H_EST) / 2 };
   }
 
   return (
@@ -94,11 +101,11 @@ export function CanvasView({ cards, links, selectedId, onBackgroundTap, view, se
             const a = center[l.from_id];
             const b = center[l.to_id];
             if (!a || !b) return null;
-            const m = linkMid(a, b);
+            const tip = arrowTip(a, b, CARD_W / 2 + ARROW_GAP, (heights[l.to_id] ?? CARD_H_EST) / 2 + ARROW_GAP);
             return (
               <g key={l.id}>
                 <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} />
-                {l.style === 'arrow' && <polygon points="-9,-7 9,0 -9,7" transform={`translate(${m.x} ${m.y}) rotate(${m.angle})`} />}
+                {l.style === 'arrow' && <polygon points="-16,-7 0,0 -16,7" transform={`translate(${tip.x} ${tip.y}) rotate(${tip.angle})`} />}
               </g>
             );
           })}
@@ -106,7 +113,8 @@ export function CanvasView({ cards, links, selectedId, onBackgroundTap, view, se
         {cards.map(c => {
           const pos = drag?.id === c.id ? drag : c;
           return (
-            <div key={c.id} data-card-id={c.id} className={c.id === selectedId ? 'canvas-card selected' : 'canvas-card'}
+            <div key={c.id} data-card-id={c.id} ref={el => { if (!el) return; observer.observe(el); return () => observer.unobserve(el); }}
+              className={c.id === selectedId ? 'canvas-card selected' : 'canvas-card'}
               style={{ left: pos.x, top: pos.y }}>
               <CardView card={c} color={colorOf(c.author_id)} />
             </div>

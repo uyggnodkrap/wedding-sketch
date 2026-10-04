@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { screenToCanvas, zoomAt, isDrag, startsGesture, linkMid, MAX_SCALE, MIN_SCALE } from './geometry';
+import { screenToCanvas, zoomAt, isDrag, startsGesture, arrowTip, MAX_SCALE, MIN_SCALE } from './geometry';
 
 const v = { x: 100, y: 50, scale: 2 };
 
@@ -35,10 +35,17 @@ describe('startsGesture', () => {
   it('오른쪽 클릭은 무시', () => expect(startsGesture({ isPrimary: true, button: 2 })).toBe(false));
 });
 
-describe('linkMid', () => {
-  it('두 점의 가운데와 진행 방향 각도(도)', () => {
-    expect(linkMid({ x: 0, y: 0 }, { x: 100, y: 0 })).toEqual({ x: 50, y: 0, angle: 0 });
-    expect(linkMid({ x: 0, y: 0 }, { x: 0, y: 100 })).toEqual({ x: 0, y: 50, angle: 90 });
-    expect(linkMid({ x: 100, y: 0 }, { x: 0, y: 0 }).angle).toBe(180);
+describe('arrowTip', () => {
+  // 도착 카드: 중심 c, 반폭 80, 반높이 30
+  it('가로: 도착 카드의 왼쪽 테두리에 붙음', () =>
+    expect(arrowTip({ x: 0, y: 0 }, { x: 100, y: 0 }, 80, 30)).toEqual({ x: 20, y: 0, angle: 0 }));
+  it('세로: 도착 카드의 위쪽 테두리에 붙음', () =>
+    expect(arrowTip({ x: 0, y: 0 }, { x: 0, y: 100 }, 80, 30)).toEqual({ x: 0, y: 70, angle: 90 }));
+  it('대각선: 먼저 만나는 테두리(위쪽)에 붙음', () => {
+    const t = arrowTip({ x: 0, y: 0 }, { x: 100, y: 100 }, 80, 30);
+    expect([t.x, t.y]).toEqual([70, 70]);
+    expect(t.angle).toBeCloseTo(45);
   });
+  it('카드가 겹쳐 출발점이 도착 카드 안이면 출발점에 둠', () =>
+    expect(arrowTip({ x: 10, y: 0 }, { x: 0, y: 0 }, 80, 30)).toMatchObject({ x: 10, y: 0 }));
 });
