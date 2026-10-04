@@ -1,10 +1,12 @@
-import type { Card, CardsState } from './types';
+type Row = { id: string };
 
-export type RemoteChange =
-  | { eventType: 'INSERT' | 'UPDATE'; new: Card }
+export type RemoteChange<T extends Row> =
+  | { eventType: 'INSERT' | 'UPDATE'; new: T }
   | { eventType: 'DELETE'; old: { id: string } };
 
-export function applyRemote(state: CardsState, change: RemoteChange, lockedId: string | null): CardsState {
+export function applyRemote<T extends Row>(
+  state: Record<string, T>, change: RemoteChange<T>, lockedId: string | null,
+): Record<string, T> {
   if (change.eventType === 'DELETE') {
     const next = { ...state };
     delete next[change.old.id];
@@ -14,9 +16,11 @@ export function applyRemote(state: CardsState, change: RemoteChange, lockedId: s
   return { ...state, [change.new.id]: change.new };
 }
 
-// 서버 스냅샷으로 교체하되, 아직 저장 중인 내 새 카드(pending)는 유지
-export function mergeSnapshot(server: Card[], local: CardsState, pending: ReadonlySet<string>): CardsState {
-  const next: CardsState = Object.fromEntries(server.map(c => [c.id, c]));
+// 서버 스냅샷으로 교체하되, 아직 저장 중인 내 새 레코드(pending)는 유지
+export function mergeSnapshot<T extends Row>(
+  server: T[], local: Record<string, T>, pending: ReadonlySet<string>,
+): Record<string, T> {
+  const next: Record<string, T> = Object.fromEntries(server.map(r => [r.id, r]));
   for (const id of pending) if (local[id] && !next[id]) next[id] = local[id];
   return next;
 }

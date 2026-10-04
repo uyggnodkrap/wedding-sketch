@@ -19,3 +19,8 @@ export const isDrag = (dx: number, dy: number) => Math.hypot(dx, dy) > 6;
 
 // 첫 손가락(주 포인터)의 터치/왼쪽 클릭만 제스처를 시작
 export const startsGesture = (e: { isPrimary: boolean; button: number }) => e.isPrimary && e.button === 0;
+
+// 선의 가운데 점과 진행 방향(도). 화살촉을 여기에 그린다
+export function linkMid(a: { x: number; y: number }, b: { x: number; y: number }) {
+  return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, angle: Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI };
+}

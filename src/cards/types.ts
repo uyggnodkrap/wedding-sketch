@@ -12,3 +12,15 @@ export type Card = {
 };
 
 export type CardsState = Record<string, Card>;
+
+export type LinkStyle = 'line' | 'arrow';
+
+export type Link = {
+  id: string;
+  from_id: string;
+  to_id: string;
+  style: LinkStyle;
+  created_at: string;
+};
+
+export type LinksState = Record<string, Link>;

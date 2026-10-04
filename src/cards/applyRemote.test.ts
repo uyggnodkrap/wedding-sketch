@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { applyRemote, mergeSnapshot } from './applyRemote';
-import type { Card, CardsState } from './types';
+import type { Card, CardsState, Link } from './types';
 
 const card = (id: string, text = ''): Card => ({
   id, text, url: null, done: false, x: 0, y: 0, sort_order: 0,
@@ -43,5 +43,12 @@ describe('mergeSnapshot', () => {
   it('저장 중인 카드가 스냅샷에 이미 있으면 서버 값 사용', () => {
     const local = { n: card('n', 'local') };
     expect(mergeSnapshot([card('n', 'server')], local, new Set(['n'])).n.text).toBe('server');
+  });
+});
+
+describe('applyRemote (links)', () => {
+  it('카드 외 레코드(연결)에도 동작', () => {
+    const l: Link = { id: 'l1', from_id: 'a', to_id: 'b', style: 'line', created_at: '' };
+    expect(applyRemote({}, { eventType: 'INSERT', new: l }, null)).toEqual({ l1: l });
   });
 });

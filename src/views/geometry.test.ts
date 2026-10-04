@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { screenToCanvas, zoomAt, isDrag, startsGesture, MAX_SCALE, MIN_SCALE } from './geometry';
+import { screenToCanvas, zoomAt, isDrag, startsGesture, linkMid, MAX_SCALE, MIN_SCALE } from './geometry';
 
 const v = { x: 100, y: 50, scale: 2 };
 
@@ -33,4 +33,12 @@ describe('startsGesture', () => {
   it('두 번째 손가락은 무시 (드래그 중 제스처가 덮어써지지 않게)', () =>
     expect(startsGesture({ isPrimary: false, button: 0 })).toBe(false));
   it('오른쪽 클릭은 무시', () => expect(startsGesture({ isPrimary: true, button: 2 })).toBe(false));
+});
+
+describe('linkMid', () => {
+  it('두 점의 가운데와 진행 방향 각도(도)', () => {
+    expect(linkMid({ x: 0, y: 0 }, { x: 100, y: 0 })).toEqual({ x: 50, y: 0, angle: 0 });
+    expect(linkMid({ x: 0, y: 0 }, { x: 0, y: 100 })).toEqual({ x: 0, y: 50, angle: 90 });
+    expect(linkMid({ x: 100, y: 0 }, { x: 0, y: 0 }).angle).toBe(180);
+  });
 });
