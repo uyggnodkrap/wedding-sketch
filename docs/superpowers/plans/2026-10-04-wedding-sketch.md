@@ -10,6 +10,8 @@
 
 **Spec:** `docs/superpowers/specs/2026-10-04-wedding-sketch-design.md`
 
+> **2026-10-04 변경:** 구현 후 로그인을 Google OAuth에서 이메일 6자리 코드(OTP)로 바꿨다. 아래 Task 2·3·8의 Google 관련 단계는 기록으로만 남긴다. 현재 설정 방법은 스펙 §5 로그인 참고.
+
 ## Global Constraints
 
 - 허용된 구글 계정 2개 외에는 데이터를 볼 수 없다 — RLS로 서버에서 강제한다.
