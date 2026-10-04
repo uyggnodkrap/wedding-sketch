@@ -33,7 +33,8 @@ function Login() {
     setMessage(null);
     const { error } = await supabase.auth.signInWithOtp({ email: email.trim(), options: { shouldCreateUser: false } });
     setBusy(false);
-    if (error) setMessage('코드를 보내지 못했어요. 등록된 이메일인지 확인하거나 잠시 후 다시 시도해 주세요');
+    if (error?.status === 429) setMessage('메일 발송 한도를 넘었어요. 이미 받은 코드가 있으면 그걸 쓰고, 없으면 잠시 후 다시 시도해 주세요');
+    else if (error) setMessage('코드를 보내지 못했어요. 등록된 이메일인지 확인해 주세요');
     else setSent(true);
   };
 
