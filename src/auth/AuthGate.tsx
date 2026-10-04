@@ -27,11 +27,12 @@ function Login() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
+  // 메일 링크를 눌러도 요청한 주소(로컬/배포)로 돌아오게 emailRedirectTo 지정 (Redirect URLs 허용 목록에 있어야 함)
   const send = async (e: FormEvent) => {
     e.preventDefault();
     setBusy(true);
     setMessage(null);
-    const { error } = await supabase.auth.signInWithOtp({ email: email.trim(), options: { shouldCreateUser: false } });
+    const { error } = await supabase.auth.signInWithOtp({ email: email.trim(), options: { shouldCreateUser: false, emailRedirectTo: location.origin } });
     setBusy(false);
     if (error?.status === 429) {
       // 한도 초과여도 앞서 보낸 코드는 유효하므로 입력 화면으로 보낸다
