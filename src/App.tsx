@@ -5,6 +5,7 @@ import { EditSheet } from './cards/EditSheet';
 import { authorColors } from './cards/authorColor';
 import { byOrder, nextOrder } from './lib/order';
 import { CanvasView } from './views/CanvasView';
+import { ListView } from './views/ListView';
 import { CARD_W, screenToCanvas, zoomAt, type View } from './views/geometry';
 
 export default function App() {
@@ -15,6 +16,7 @@ function Board({ userId }: { userId: string }) {
   const { cards, online, error, clearError, create, update, remove, setDragging } = useCards(userId);
   const [view, setView] = useState<View>({ x: 0, y: 0, scale: 1 });
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [mode, setMode] = useState<'canvas' | 'list'>('canvas');
   const editing = editingId ? cards[editingId] : undefined; // 상대가 삭제하면 undefined → 시트 닫힘
   const list = useMemo(() => Object.values(cards).sort(byOrder), [cards]);
   const colorOf = useMemo(() => authorColors(list), [list]);
@@ -28,12 +30,24 @@ function Board({ userId }: { userId: string }) {
 
   return (
     <>
-      <CanvasView cards={list} view={view} setView={setView} colorOf={colorOf}
-        onMove={(id, x, y) => update(id, { x, y })} onTap={setEditingId} setDragging={setDragging} />
+      {mode === 'canvas' ? (
+        <CanvasView cards={list} view={view} setView={setView} colorOf={colorOf}
+          onMove={(id, x, y) => update(id, { x, y })} onTap={setEditingId} setDragging={setDragging} />
+      ) : (
+        <ListView cards={list} colorOf={colorOf}
+          onReorder={(id, sort_order) => update(id, { sort_order })} onTap={setEditingId} setDragging={setDragging} />
+      )}
       <header className="topbar">
-        <div className="tabs" />
-        <button aria-label="축소" onClick={() => zoom(1 / 1.25)}>−</button>
-        <button aria-label="확대" onClick={() => zoom(1.25)}>+</button>
+        <div className="tabs">
+          <button aria-pressed={mode === 'canvas'} onClick={() => setMode('canvas')}>캔버스</button>
+          <button aria-pressed={mode === 'list'} onClick={() => setMode('list')}>정리</button>
+        </div>
+        {mode === 'canvas' && (
+          <>
+            <button aria-label="축소" onClick={() => zoom(1 / 1.25)}>−</button>
+            <button aria-label="확대" onClick={() => zoom(1.25)}>+</button>
+          </>
+        )}
         <button className="primary" onClick={add}>새 메모</button>
       </header>
       {!online && <div className="banner">오프라인 · 연결되면 다시 불러옵니다</div>}
