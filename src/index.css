@@ -32,6 +32,9 @@ button.danger { color: var(--danger); }
 .links { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
 .links line { stroke: var(--muted); stroke-width: 2; }
 .links polygon { fill: var(--muted); }
+.links .selected line { stroke: var(--accent); stroke-width: 3; }
+.links .selected polygon { fill: var(--accent); }
+.links line.hit { stroke: transparent; stroke-width: 20; pointer-events: stroke; }
 .empty { position: fixed; top: 45%; width: 100%; text-align: center; color: var(--muted); pointer-events: none; }
 
 .card { position: relative; background: var(--card); border: 1px solid var(--line); border-left: 6px solid; border-radius: 8px; padding: 10px 28px 10px 12px; box-shadow: 0 1px 3px rgb(0 0 0 / .08); }

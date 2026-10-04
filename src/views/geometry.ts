@@ -28,3 +28,8 @@ export function arrowTip(from: { x: number; y: number }, to: { x: number; y: num
   const t = Math.min(1, dx ? hw / Math.abs(dx) : Infinity, dy ? hh / Math.abs(dy) : Infinity);
   return { x: to.x + dx * t, y: to.y + dy * t, angle: Math.atan2(to.y - from.y, to.x - from.x) * 180 / Math.PI };
 }
+
+// 같은 대상을 ms 이내에 다시 탭했는지 (더블클릭/더블탭 공용)
+export function isDoubleTap(prev: { id: string; t: number } | null, id: string, t: number, ms = 300): boolean {
+  return prev !== null && prev.id === id && t - prev.t <= ms;
+}

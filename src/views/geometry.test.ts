@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { screenToCanvas, zoomAt, isDrag, startsGesture, arrowTip, MAX_SCALE, MIN_SCALE } from './geometry';
+import { screenToCanvas, zoomAt, isDrag, startsGesture, arrowTip, isDoubleTap, MAX_SCALE, MIN_SCALE } from './geometry';
 
 const v = { x: 100, y: 50, scale: 2 };
 
@@ -48,4 +48,11 @@ describe('arrowTip', () => {
   });
   it('카드가 겹쳐 출발점이 도착 카드 안이면 출발점에 둠', () =>
     expect(arrowTip({ x: 10, y: 0 }, { x: 0, y: 0 }, 80, 30)).toMatchObject({ x: 10, y: 0 }));
+});
+
+describe('isDoubleTap', () => {
+  it('같은 대상을 300ms 이내에 다시 탭하면 더블탭', () => expect(isDoubleTap({ id: 'l1', t: 1000 }, 'l1', 1300)).toBe(true));
+  it('간격이 300ms를 넘으면 아님', () => expect(isDoubleTap({ id: 'l1', t: 1000 }, 'l1', 1301)).toBe(false));
+  it('다른 대상이면 아님', () => expect(isDoubleTap({ id: 'l1', t: 1000 }, 'l2', 1100)).toBe(false));
+  it('이전 탭이 없으면 아님', () => expect(isDoubleTap(null, 'l1', 1000)).toBe(false));
 });

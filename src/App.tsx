@@ -27,8 +27,15 @@ function Board({ userId }: { userId: string }) {
   const [connecting, setConnecting] = useState(false);
   const [linkStyle, setLinkStyle] = useState<LinkStyle>('line');
   const [fromId, setFromId] = useState<string | null>(null);
+  const [selectedLinkId, setSelectedLinkId] = useState<string | null>(null);
+
+  const deleteLink = (id: string) => {
+    if (confirm('이 연결을 삭제할까요?')) applyLink({ kind: 'remove', id });
+    setSelectedLinkId(null);
+  };
 
   const onCardTap = (id: string) => {
+    setSelectedLinkId(null);
     if (!connecting) return setEditingId(id);
     if (!fromId) return setFromId(id);
     const action = toggleLink(linkList, fromId, id, linkStyle);
@@ -50,7 +57,8 @@ function Board({ userId }: { userId: string }) {
   return (
     <>
       {mode === 'canvas' ? (
-        <CanvasView cards={list} links={linkList} selectedId={fromId} onBackgroundTap={() => setFromId(null)}
+        <CanvasView cards={list} links={linkList} selectedId={fromId} onBackgroundTap={() => { setFromId(null); setSelectedLinkId(null); }}
+          selectedLinkId={selectedLinkId} onLinkTap={setSelectedLinkId} onLinkDoubleTap={deleteLink}
           view={view} setView={setView} colorOf={colorOf}
           onMove={(id, x, y) => update(id, { x, y })} onTap={onCardTap} setDragging={setDragging} />
       ) : (
