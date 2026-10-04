@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import type { Card, Link } from '../cards/types';
 import { CardView } from '../cards/CardView';
-import { arrowTip, CARD_W, isDoubleTap, isDrag, startsGesture, type View } from './geometry';
+import { arrowTip, CARD_W, centerOn, DOUBLE_TAP_MS, isDoubleTap, isDrag, startsGesture, type View } from './geometry';
 
 const CARD_H_EST = 60; // 측정 전 첫 렌더용
 const ARROW_GAP = -1; // 화살촉 끝을 카드 밑으로 1px 넣어 틈 없이 붙임 (카드가 SVG 위에 그려져 가려짐)
@@ -30,6 +30,10 @@ type Props = {
 export function CanvasView({ cards, links, selectedId, selectedLinkId, onLinkTap, onLinkDoubleTap, onBackgroundTap, view, setView, colorOf, onMove, onTap, setDragging }: Props) {
   const g = useRef<Gesture | null>(null);
   const lastLinkTap = useRef<{ id: string; t: number } | null>(null);
+  // 카드 한 번 탭은 더블 탭인지 알 때까지 미룸 (편집 시트가 열리면 두 번째 탭이 카드에 닿지 않음)
+  const lastCardTap = useRef<{ id: string; t: number } | null>(null);
+  const tapTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const [gliding, setGliding] = useState(false);
   const [drag, setDrag] = useState<{ id: string; x: number; y: number } | null>(null);
   // 카드 높이는 내용마다 달라 실제로 측정 (화살촉을 도착 카드 테두리에 붙이기 위해)
   const [heights, setHeights] = useState<Record<string, number>>({});
@@ -77,7 +81,7 @@ export function CanvasView({ cards, links, selectedId, selectedLinkId, onLinkTap
     g.current = null;
     if (cur?.kind === 'pan' && !cur.moved) {
       if (!cur.linkId) return onBackgroundTap();
-      const now = performance.now();
+      const now = e.timeStamp;
       if (isDoubleTap(lastLinkTap.current, cur.linkId, now)) {
         lastLinkTap.current = null;
         return onLinkDoubleTap(cur.linkId);
@@ -86,10 +90,30 @@ export function CanvasView({ cards, links, selectedId, selectedLinkId, onLinkTap
       return onLinkTap(cur.linkId);
     }
     if (cur?.kind !== 'card') return;
-    if (!cur.moved) return onTap(cur.id);
+    if (!cur.moved) {
+      const now = e.timeStamp;
+      if (isDoubleTap(lastCardTap.current, cur.id, now)) {
+        clearTimeout(tapTimer.current);
+        lastCardTap.current = null;
+        return centerCard(cur.id);
+      }
+      lastCardTap.current = { id: cur.id, t: now };
+      const id = cur.id;
+      tapTimer.current = setTimeout(() => onTap(id), DOUBLE_TAP_MS);
+      return;
+    }
     onMove(cur.id, cur.x, cur.y);
     setDrag(null);
     setDragging(null);
+  };
+
+  // 더블 탭한 카드를 화면 정중앙으로 부드럽게 이동
+  const centerCard = (id: string) => {
+    const c = cards.find(card => card.id === id);
+    if (!c) return;
+    setGliding(true);
+    setView(centerOn(view, c.x + CARD_W / 2, c.y + (heights[id] ?? CARD_H_EST) / 2, innerWidth, innerHeight));
+    setTimeout(() => setGliding(false), DOUBLE_TAP_MS);
   };
 
   const onPointerCancel = (e: React.PointerEvent) => {
@@ -119,7 +143,7 @@ export function CanvasView({ cards, links, selectedId, selectedLinkId, onLinkTap
   return (
     <div className="canvas" onPointerDown={onPointerDown} onPointerMove={onPointerMove}
       onPointerUp={onPointerUp} onPointerCancel={onPointerCancel}>
-      <div className="canvas-layer" style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}>
+      <div className={gliding ? 'canvas-layer gliding' : 'canvas-layer'} style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}>
         <svg className="links" aria-hidden="true" style={{ left: box.x, top: box.y }} width={box.w} height={box.h}
           viewBox={`${box.x} ${box.y} ${box.w} ${box.h}`}>
           {links.map(l => {

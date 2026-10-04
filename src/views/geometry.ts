@@ -8,6 +8,11 @@ export function screenToCanvas(v: View, sx: number, sy: number) {
   return { x: (sx - v.x) / v.scale, y: (sy - v.y) / v.scale };
 }
 
+// 캔버스 (cx, cy)가 w×h 화면의 정중앙에 오도록 이동 (배율 유지)
+export function centerOn(v: View, cx: number, cy: number, w: number, h: number): View {
+  return { x: w / 2 - cx * v.scale, y: h / 2 - cy * v.scale, scale: v.scale };
+}
+
 // 화면의 (sx, sy) 지점을 고정한 채 확대/축소
 export function zoomAt(v: View, sx: number, sy: number, factor: number): View {
   const scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, v.scale * factor));
@@ -30,6 +35,8 @@ export function arrowTip(from: { x: number; y: number }, to: { x: number; y: num
 }
 
 // 같은 대상을 ms 이내에 다시 탭했는지 (더블클릭/더블탭 공용)
-export function isDoubleTap(prev: { id: string; t: number } | null, id: string, t: number, ms = 300): boolean {
+export const DOUBLE_TAP_MS = 300;
+
+export function isDoubleTap(prev: { id: string; t: number } | null, id: string, t: number, ms = DOUBLE_TAP_MS): boolean {
   return prev !== null && prev.id === id && t - prev.t <= ms;
 }

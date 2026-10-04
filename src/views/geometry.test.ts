@@ -1,10 +1,18 @@
 import { describe, it, expect } from 'vitest';
-import { screenToCanvas, zoomAt, isDrag, startsGesture, arrowTip, isDoubleTap, MAX_SCALE, MIN_SCALE } from './geometry';
+import { screenToCanvas, zoomAt, centerOn, isDrag, startsGesture, arrowTip, isDoubleTap, MAX_SCALE, MIN_SCALE } from './geometry';
 
 const v = { x: 100, y: 50, scale: 2 };
 
 describe('screenToCanvas', () => {
   it('pan과 scale을 되돌림', () => expect(screenToCanvas(v, 300, 250)).toEqual({ x: 100, y: 100 }));
+});
+
+describe('centerOn', () => {
+  it('캔버스 지점이 화면 중앙에 오고 배율은 유지', () => {
+    const c = centerOn(v, 300, 120, 800, 600);
+    expect(c.scale).toBe(v.scale);
+    expect(screenToCanvas(c, 400, 300)).toEqual({ x: 300, y: 120 });
+  });
 });
 
 describe('zoomAt', () => {

@@ -34,6 +34,8 @@ button.danger { color: var(--danger); }
 
 .canvas { position: fixed; inset: 0; overflow: hidden; touch-action: none; background-image: radial-gradient(var(--line) 1px, transparent 1px); background-size: 24px 24px; }
 .canvas-layer { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+.canvas-layer.gliding { transition: transform .3s ease; }
+@media (prefers-reduced-motion: reduce) { .canvas-layer.gliding { transition: none; } }
 .canvas-card { position: absolute; width: 160px; user-select: none; -webkit-user-select: none; }
 .canvas-card.selected .card { outline: 2px solid var(--fg); outline-offset: 0; }
 .links { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
