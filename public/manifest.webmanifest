@@ -1,0 +1,9 @@
+{
+  "name": "Wedding Sketch",
+  "short_name": "Sketch",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf7f2",
+  "theme_color": "#c76b7e",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
