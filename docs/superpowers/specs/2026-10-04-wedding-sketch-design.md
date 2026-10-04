@@ -16,7 +16,7 @@
 ## 2. 범위
 
 **포함**
-- 이메일 6자리 코드(OTP) 로그인, 계정은 관리자가 대시보드에서 생성(=승인), 신규 가입 차단
+- 이메일 + 비밀번호 로그인(보조: 이메일 6자리 코드), 계정·비밀번호는 관리자가 대시보드에서 생성(=승인), 신규 가입 차단
 - 카드: 텍스트, 링크(선택), 완료 체크, 작성자 색 구분
 - 캔버스 보기: 카드 자유 배치, 캔버스 이동(pan), 버튼 줌
 - 정리 모드: `sort_order` 기준 세로 리스트, 터치 드래그 재정렬
@@ -36,7 +36,7 @@
 | 계층 | 선택 |
 |---|---|
 | 프론트엔드 | React + Vite + TypeScript, PWA |
-| 백엔드 | Supabase (Postgres, Realtime, Email OTP, RLS). 서버 코드 없음 |
+| 백엔드 | Supabase (Postgres, Realtime, Email 비밀번호 + OTP, RLS). 서버 코드 없음 |
 | 배포 | 정적 호스팅 (Vercel 또는 Netlify 무료 플랜) |
 | 추가 의존성 | `@supabase/supabase-js`, `@dnd-kit/core`, `@dnd-kit/sortable` |
 
@@ -74,7 +74,9 @@
 ## 5. 화면과 상호작용
 
 ### 로그인
-- 이메일 입력 → 메일로 받은 6자리 코드 입력. 매직 링크는 iOS 홈 화면 앱에서 세션이 Safari로 가므로 쓰지 않는다.
+- 기본: 이메일 + 비밀번호 (`autocomplete=username/current-password`로 브라우저가 저장·기기 간 동기화). 보조: "비밀번호 없이 이메일 코드로 로그인" → 6자리 코드 입력.
+- 비밀번호는 관리자가 SQL로 설정 (`supabase/admin/set_password.sql`). 앱 내 변경/찾기 화면은 없음.
+- 코드 방식: 매직 링크는 iOS 홈 화면 앱에서 세션이 Safari로 가므로 쓰지 않는다.
 - 미등록 이메일에는 코드를 보내지 않는다 (`shouldCreateUser: false`).
 
 ### 메인
