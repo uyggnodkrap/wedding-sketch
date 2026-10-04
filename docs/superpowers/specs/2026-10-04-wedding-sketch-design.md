@@ -119,5 +119,5 @@
 ## 8. 테스트
 
 - `sort_order` 계산을 순수 함수로 분리, Vitest 테스트 하나: 중간 삽입, 맨 앞, 맨 뒤, 빈 리스트.
-- RLS: `anon`으로 `cards` select 시 0건임을 SQL 체크 하나로 확인.
+- RLS: `supabase/checks/rls_check.sh` — anon 키만으로 `cards` 조회 시 빈 배열인지 확인.
 - 수동 검증: 폰 + 태블릿 두 기기 동시 편집으로 캔버스 드래그, 정리 모드 드래그, 실시간 반영 확인.
