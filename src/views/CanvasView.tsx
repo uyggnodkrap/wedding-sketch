@@ -5,6 +5,7 @@ import { arrowTip, CARD_W, isDoubleTap, isDrag, startsGesture, type View } from 
 
 const CARD_H_EST = 60; // 측정 전 첫 렌더용
 const ARROW_GAP = -1; // 화살촉 끝을 카드 밑으로 1px 넣어 틈 없이 붙임 (카드가 SVG 위에 그려져 가려짐)
+const HIGHLIGHT_W = 3; // 하이라이트 외곽선 두께 (index.css .canvas-card.selected .card outline과 맞출 것)
 
 type Gesture =
   | { kind: 'pan'; pointerId: number; linkId?: string; sx: number; sy: number; ox: number; oy: number; moved: boolean }
@@ -125,7 +126,9 @@ export function CanvasView({ cards, links, selectedId, selectedLinkId, onLinkTap
             const a = center[l.from_id];
             const b = center[l.to_id];
             if (!a || !b) return null;
-            const tip = arrowTip(a, b, CARD_W / 2 + ARROW_GAP, (heights[l.to_id] ?? CARD_H_EST) / 2 + ARROW_GAP);
+            // 도착 카드가 하이라이트 중이면 외곽선 바깥에 붙임
+            const gap = ARROW_GAP + (highlighted(l.to_id) ? HIGHLIGHT_W : 0);
+            const tip = arrowTip(a, b, CARD_W / 2 + gap, (heights[l.to_id] ?? CARD_H_EST) / 2 + gap);
             return (
               <g key={l.id} className={l.id === selectedLinkId ? 'selected' : undefined}>
                 <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} />
