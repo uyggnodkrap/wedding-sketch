@@ -1,6 +1,7 @@
 import type { Card } from './types';
+import { paletteHex } from './palette';
 
-const COLORS = ['#c98a8f', '#7c8558'];
+const COLORS = [paletteHex('rose'), paletteHex('olive')];
 
 // ponytail: author_id 정렬 순서로 색 배정. 두 사람이 모두 카드를 쓰기 전엔 색이 한 번 바뀔 수 있음, 거슬리면 사용자별 색을 테이블에 저장
 export function authorColors(cards: Card[]) {
