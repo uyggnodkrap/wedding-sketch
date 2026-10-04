@@ -138,6 +138,7 @@ export function CanvasView({ cards, links, selectedId, selectedLinkId, onLinkTap
         h: Math.max(...pts.map(p => p.y)) - Math.min(...pts.map(p => p.y)) + CARD_W * 2 }
     : { x: 0, y: 0, w: 1, h: 1 };
   const selectedLink = links.find(l => l.id === selectedLinkId);
+  const doneIds = new Set(cards.filter(c => c.done).map(c => c.id));
   const highlighted = (id: string) => id === selectedId || id === selectedLink?.from_id || id === selectedLink?.to_id;
 
   return (
@@ -154,7 +155,7 @@ export function CanvasView({ cards, links, selectedId, selectedLinkId, onLinkTap
             const gap = ARROW_GAP + (highlighted(l.to_id) ? HIGHLIGHT_W : 0);
             const tip = arrowTip(a, b, CARD_W / 2 + gap, (heights[l.to_id] ?? CARD_H_EST) / 2 + gap);
             return (
-              <g key={l.id} className={l.id === selectedLinkId ? 'selected' : undefined}>
+              <g key={l.id} className={[l.id === selectedLinkId && 'selected', (doneIds.has(l.from_id) || doneIds.has(l.to_id)) && 'done'].filter(Boolean).join(' ') || undefined}>
                 <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} />
                 <line className="hit" data-link-id={l.id} x1={a.x} y1={a.y} x2={b.x} y2={b.y} />
                 {l.style === 'arrow' && <polygon points="-10,-4.5 0,0 -10,4.5" transform={`translate(${tip.x} ${tip.y}) rotate(${tip.angle})`} />}

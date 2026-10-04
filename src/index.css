@@ -43,6 +43,7 @@ button.danger { color: var(--danger); }
 .links polygon { fill: var(--muted); }
 .links .selected line { stroke: var(--fg); stroke-width: 2; }
 .links .selected polygon { fill: var(--fg); }
+.links .done:not(.selected) { opacity: .3; }
 .links line.hit { stroke: transparent; stroke-width: 20; pointer-events: stroke; }
 .empty { position: fixed; top: 45%; width: 100%; text-align: center; color: var(--muted); pointer-events: none; }
 
@@ -50,7 +51,9 @@ button.danger { color: var(--danger); }
 .card { position: relative; background: var(--card); border: 1px solid color-mix(in srgb, var(--author) 55%, var(--line)); border-radius: 4px; padding: 14px 28px 12px 14px; box-shadow: var(--shadow); }
 .card::before { content: ""; position: absolute; top: -6px; left: 12px; width: 12px; height: 12px; border-radius: 50%; background: var(--author); box-shadow: 0 0 0 2px var(--card); }
 .card p { margin: 0; font-family: var(--memo); font-size: 15px; font-weight: 350; line-height: 1.6; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
-.card.done { opacity: .5; }
+/* 배경은 불투명하게 두어 아래 연결선이 비치지 않게, 내용만 흐리게 */
+.card.done { border-color: var(--line); }
+.card.done > *, .card.done::before { opacity: .5; }
 .card.done p { text-decoration: line-through; }
 .card a { position: absolute; top: 8px; right: 6px; text-decoration: none; }
 
