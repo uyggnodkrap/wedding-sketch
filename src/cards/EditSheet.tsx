@@ -3,6 +3,7 @@ import type { Card } from './types';
 import { createSaver } from '../lib/saver';
 import { normalizeUrl } from '../lib/url';
 import { PALETTE } from './palette';
+import { ConfirmDialog } from '../ConfirmDialog';
 
 type Props = {
   card: Card;
@@ -21,8 +22,8 @@ export function EditSheet({ card, update, remove, onClose }: Props) {
   // 시트를 연 탭의 뒤늦은 click(iOS)으로 닫히지 않게, 배경에서 시작된 누름만 닫기로 인정
   const downOnBackdrop = useRef(false);
 
+  const [confirming, setConfirming] = useState(false);
   const onDelete = () => {
-    if (!confirm('이 메모를 삭제할까요?')) return;
     saver.cancel();
     remove(card.id);
     onClose();
@@ -47,10 +48,14 @@ export function EditSheet({ card, update, remove, onClose }: Props) {
           <input type="checkbox" checked={card.done} onChange={e => update(card.id, { done: e.target.checked })} /> 완료
         </label>
         <div className="sheet-actions">
-          <button className="danger" onClick={onDelete}>삭제</button>
+          <button className="danger" onClick={() => setConfirming(true)}>삭제</button>
           <button onClick={onClose}>닫기</button>
         </div>
       </div>
+      {confirming && (
+        <ConfirmDialog message="이 메모를 삭제할까요?" detail="연결된 선도 함께 지워지고 되돌릴 수 없어요." confirmLabel="삭제"
+          onConfirm={onDelete} onCancel={() => setConfirming(false)} />
+      )}
     </div>
   );
 }

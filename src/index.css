@@ -74,6 +74,17 @@ button.danger { color: var(--danger); }
 .swatch[aria-pressed="true"] { border-color: var(--bg); box-shadow: 0 0 0 2px var(--fg); }
 .sheet-actions { display: flex; justify-content: space-between; }
 
+/* 삭제 확인창 */
+.confirm { width: min(320px, calc(100% - 32px)); margin: 18vh auto auto; padding: 0; color: inherit; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); animation: confirm-in .15s ease-out; }
+.confirm::backdrop { background: rgb(58 42 48 / .35); }
+.confirm-body { padding: 20px; display: grid; gap: 6px; }
+.confirm-title { margin: 0; font-size: 16px; font-weight: 600; }
+.confirm-detail { margin: 0; font-size: 14px; color: var(--muted); }
+.confirm-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+.confirm button.danger { background: var(--danger); border-color: var(--danger); color: #fff; font-weight: 600; }
+@keyframes confirm-in { from { transform: scale(.96); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .confirm { animation: none; } }
+
 /* 태블릿/PC: 편집 시트를 왼쪽 전체 높이 패널로 */
 @media (min-width: 768px) {
   .sheet-backdrop { justify-content: flex-start; align-items: stretch; background: rgb(58 42 48 / .12); }

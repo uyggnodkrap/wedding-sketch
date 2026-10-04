@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { AuthGate } from './auth/AuthGate';
 import { useCards } from './cards/useCards';
 import { EditSheet } from './cards/EditSheet';
+import { ConfirmDialog } from './ConfirmDialog';
 import { authorColors } from './cards/authorColor';
 import { toggleLink } from './cards/links';
 import type { LinkStyle } from './cards/types';
@@ -29,8 +30,9 @@ function Board({ userId }: { userId: string }) {
   const [fromId, setFromId] = useState<string | null>(null);
   const [selectedLinkId, setSelectedLinkId] = useState<string | null>(null);
 
-  const deleteLink = (id: string) => {
-    if (confirm('이 연결을 삭제할까요?')) applyLink({ kind: 'remove', id });
+  const [confirmLinkId, setConfirmLinkId] = useState<string | null>(null);
+  const closeLinkConfirm = () => {
+    setConfirmLinkId(null);
     setSelectedLinkId(null);
   };
 
@@ -58,7 +60,7 @@ function Board({ userId }: { userId: string }) {
     <>
       {mode === 'canvas' ? (
         <CanvasView cards={list} links={linkList} selectedId={fromId} onBackgroundTap={() => { setFromId(null); setSelectedLinkId(null); }}
-          selectedLinkId={selectedLinkId} onLinkTap={setSelectedLinkId} onLinkDoubleTap={deleteLink}
+          selectedLinkId={selectedLinkId} onLinkTap={setSelectedLinkId} onLinkDoubleTap={setConfirmLinkId}
           view={view} setView={setView} colorOf={colorOf}
           onMove={(id, x, y) => update(id, { x, y })} onTap={onCardTap} setDragging={setDragging} />
       ) : (
@@ -91,6 +93,10 @@ function Board({ userId }: { userId: string }) {
       )}
       {!online && <div className="banner">오프라인 · 연결되면 다시 불러옵니다</div>}
       {error && <div className="toast" role="alert" onClick={clearError}>{error}</div>}
+      {confirmLinkId && (
+        <ConfirmDialog message="이 연결을 삭제할까요?" detail="두 메모는 그대로 남아요." confirmLabel="삭제"
+          onConfirm={() => { applyLink({ kind: 'remove', id: confirmLinkId }); closeLinkConfirm(); }} onCancel={closeLinkConfirm} />
+      )}
       {editing && (
         <EditSheet key={editing.id} card={editing} update={update} remove={remove} onClose={() => setEditingId(null)} />
       )}
