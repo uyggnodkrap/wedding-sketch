@@ -3,7 +3,7 @@
   "short_name": "Sketch",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#faf7f2",
-  "theme_color": "#c76b7e",
+  "background_color": "#f6efe6",
+  "theme_color": "#d9785b",
   "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
 }

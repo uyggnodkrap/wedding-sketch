@@ -83,6 +83,7 @@ function Board({ userId }: { userId: string }) {
             <button aria-label="확대" onClick={() => zoom(1.25)}>+</button>
           </>
         )}
+        <ThemeButton />
         <button className="primary" onClick={add}>새 메모</button>
       </header>
       {mode === 'canvas' && connecting && (
@@ -95,4 +96,21 @@ function Board({ userId }: { userId: string }) {
       )}
     </>
   );
+}
+
+const THEMES = { system: '🌗', light: '☀️', dark: '🌙' } as const;
+const THEME_LABEL = { system: '시스템 테마', light: '라이트 모드', dark: '다크 모드' } as const;
+type Theme = keyof typeof THEMES;
+
+// 시스템 → 라이트 → 다크 순환. 초기 적용은 index.html 인라인 스크립트가 깜빡임 없이 처리
+function ThemeButton() {
+  const [theme, setTheme] = useState<Theme>(() => (document.documentElement.dataset.theme as Theme) || 'system');
+  const next = () => {
+    const t: Theme = theme === 'system' ? 'light' : theme === 'light' ? 'dark' : 'system';
+    if (t === 'system') delete document.documentElement.dataset.theme;
+    else document.documentElement.dataset.theme = t;
+    try { localStorage.setItem('theme', t); } catch { /* 저장 불가해도 이번 세션엔 적용됨 */ }
+    setTheme(t);
+  };
+  return <button aria-label={`${THEME_LABEL[theme]} (눌러서 변경)`} title={THEME_LABEL[theme]} onClick={next}>{THEMES[theme]}</button>;
 }
