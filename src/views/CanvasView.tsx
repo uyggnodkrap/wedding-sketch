@@ -1,11 +1,11 @@
 import { useRef, useState } from 'react';
 import type { Card } from '../cards/types';
 import { CardView } from '../cards/CardView';
-import { isDrag, type View } from './geometry';
+import { isDrag, startsGesture, type View } from './geometry';
 
 type Gesture =
-  | { kind: 'pan'; sx: number; sy: number; ox: number; oy: number }
-  | { kind: 'card'; id: string; sx: number; sy: number; ox: number; oy: number; x: number; y: number; moved: boolean };
+  | { kind: 'pan'; pointerId: number; sx: number; sy: number; ox: number; oy: number }
+  | { kind: 'card'; pointerId: number; id: string; sx: number; sy: number; ox: number; oy: number; x: number; y: number; moved: boolean };
 
 type Props = {
   cards: Card[];
@@ -22,19 +22,20 @@ export function CanvasView({ cards, view, setView, colorOf, onMove, onTap, setDr
   const [drag, setDrag] = useState<{ id: string; x: number; y: number } | null>(null);
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (g.current || !startsGesture(e)) return; // 두 번째 손가락, 오른쪽 클릭 무시
     const target = e.target as HTMLElement;
     if (target.closest('a')) return; // 링크 탭은 그대로 통과
     const id = target.closest<HTMLElement>('[data-card-id]')?.dataset.cardId;
     const card = id ? cards.find(c => c.id === id) : undefined;
     e.currentTarget.setPointerCapture(e.pointerId);
     g.current = card
-      ? { kind: 'card', id: card.id, sx: e.clientX, sy: e.clientY, ox: card.x, oy: card.y, x: card.x, y: card.y, moved: false }
-      : { kind: 'pan', sx: e.clientX, sy: e.clientY, ox: view.x, oy: view.y };
+      ? { kind: 'card', pointerId: e.pointerId, id: card.id, sx: e.clientX, sy: e.clientY, ox: card.x, oy: card.y, x: card.x, y: card.y, moved: false }
+      : { kind: 'pan', pointerId: e.pointerId, sx: e.clientX, sy: e.clientY, ox: view.x, oy: view.y };
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
     const cur = g.current;
-    if (!cur) return;
+    if (cur?.pointerId !== e.pointerId) return;
     const dx = e.clientX - cur.sx;
     const dy = e.clientY - cur.sy;
     if (cur.kind === 'pan') return setView({ ...view, x: cur.ox + dx, y: cur.oy + dy });
@@ -48,8 +49,9 @@ export function CanvasView({ cards, view, setView, colorOf, onMove, onTap, setDr
     setDrag({ id: cur.id, x: cur.x, y: cur.y });
   };
 
-  const onPointerUp = () => {
+  const onPointerUp = (e: React.PointerEvent) => {
     const cur = g.current;
+    if (cur?.pointerId !== e.pointerId) return;
     g.current = null;
     if (cur?.kind !== 'card') return;
     if (!cur.moved) return onTap(cur.id);
@@ -58,7 +60,8 @@ export function CanvasView({ cards, view, setView, colorOf, onMove, onTap, setDr
     setDragging(null);
   };
 
-  const onPointerCancel = () => {
+  const onPointerCancel = (e: React.PointerEvent) => {
+    if (g.current?.pointerId !== e.pointerId) return;
     g.current = null;
     setDrag(null);
     setDragging(null);

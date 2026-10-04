@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { applyRemote, type RemoteChange } from './applyRemote';
+import { applyRemote, mergeSnapshot, type RemoteChange } from './applyRemote';
 import type { Card, CardsState } from './types';
 
 export function useCards(userId: string) {
@@ -8,11 +8,12 @@ export function useCards(userId: string) {
   const [online, setOnline] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const lockRef = useRef<string | null>(null);
+  const pendingRef = useRef(new Set<string>()); // insert 응답 전인 내 새 카드
 
   const reload = useCallback(async () => {
     const { data, error } = await supabase.from('cards').select('*');
     if (error) return setError('불러오기 실패');
-    setCards(Object.fromEntries((data as Card[]).map(c => [c.id, c])));
+    setCards(s => mergeSnapshot(data as Card[], s, pendingRef.current));
   }, []);
 
   useEffect(() => {
@@ -43,7 +44,8 @@ export function useCards(userId: string) {
       sort_order: sortOrder, author_id: userId, created_at: now, updated_at: now,
     };
     setCards(s => ({ ...s, [card.id]: card }));
-    run(supabase.from('cards').insert(card));
+    pendingRef.current.add(card.id);
+    run(supabase.from('cards').insert(card)).finally(() => pendingRef.current.delete(card.id));
     return card.id;
   }, [userId, run]);
 

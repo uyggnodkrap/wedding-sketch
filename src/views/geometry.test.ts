@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { screenToCanvas, zoomAt, isDrag, MAX_SCALE, MIN_SCALE } from './geometry';
+import { screenToCanvas, zoomAt, isDrag, startsGesture, MAX_SCALE, MIN_SCALE } from './geometry';
 
 const v = { x: 100, y: 50, scale: 2 };
 
@@ -26,4 +26,11 @@ describe('zoomAt', () => {
 describe('isDrag', () => {
   it('6px 이하 이동은 탭', () => expect(isDrag(3, 3)).toBe(false));
   it('6px 초과 이동은 드래그', () => expect(isDrag(10, 0)).toBe(true));
+});
+
+describe('startsGesture', () => {
+  it('첫 손가락 터치/왼쪽 클릭은 제스처 시작', () => expect(startsGesture({ isPrimary: true, button: 0 })).toBe(true));
+  it('두 번째 손가락은 무시 (드래그 중 제스처가 덮어써지지 않게)', () =>
+    expect(startsGesture({ isPrimary: false, button: 0 })).toBe(false));
+  it('오른쪽 클릭은 무시', () => expect(startsGesture({ isPrimary: true, button: 2 })).toBe(false));
 });

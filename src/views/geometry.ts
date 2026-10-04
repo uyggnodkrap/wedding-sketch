@@ -16,3 +16,6 @@ export function zoomAt(v: View, sx: number, sy: number, factor: number): View {
 }
 
 export const isDrag = (dx: number, dy: number) => Math.hypot(dx, dy) > 6;
+
+// 첫 손가락(주 포인터)의 터치/왼쪽 클릭만 제스처를 시작
+export const startsGesture = (e: { isPrimary: boolean; button: number }) => e.isPrimary && e.button === 0;

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { applyRemote } from './applyRemote';
+import { applyRemote, mergeSnapshot } from './applyRemote';
 import type { Card, CardsState } from './types';
 
 const card = (id: string, text = ''): Card => ({
@@ -27,5 +27,21 @@ describe('applyRemote', () => {
   it('원본 상태를 변경하지 않음', () => {
     applyRemote(state, { eventType: 'DELETE', old: { id: 'b' } }, null);
     expect(state).toHaveProperty('b');
+  });
+});
+
+describe('mergeSnapshot', () => {
+  it('서버 스냅샷으로 교체 (서버에 없는 로컬 카드는 제거)', () => {
+    const next = mergeSnapshot([card('a', 'server')], state, new Set());
+    expect(next.a.text).toBe('server');
+    expect(next).not.toHaveProperty('b');
+  });
+  it('아직 저장 중인 내 새 카드는 스냅샷에 없어도 유지 (앱 열자마자 새 메모)', () => {
+    const local = { ...state, n: card('n', 'typing') };
+    expect(mergeSnapshot([card('a')], local, new Set(['n'])).n.text).toBe('typing');
+  });
+  it('저장 중인 카드가 스냅샷에 이미 있으면 서버 값 사용', () => {
+    const local = { n: card('n', 'local') };
+    expect(mergeSnapshot([card('n', 'server')], local, new Set(['n'])).n.text).toBe('server');
   });
 });

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Card } from './types';
 import { createSaver } from '../lib/saver';
 import { normalizeUrl } from '../lib/url';
@@ -17,6 +17,8 @@ export function EditSheet({ card, update, remove, onClose }: Props) {
   const [saver] = useState(() => createSaver<Partial<Card>>(patch => update(card.id, patch)));
 
   useEffect(() => saver.flush, [saver]); // 닫힐 때 남은 입력 저장
+  // 시트를 연 탭의 뒤늦은 click(iOS)으로 닫히지 않게, 배경에서 시작된 누름만 닫기로 인정
+  const downOnBackdrop = useRef(false);
 
   const onDelete = () => {
     if (!confirm('이 메모를 삭제할까요?')) return;
@@ -26,8 +28,10 @@ export function EditSheet({ card, update, remove, onClose }: Props) {
   };
 
   return (
-    <div className="sheet-backdrop" onClick={onClose}>
-      <div className="sheet" role="dialog" aria-label="메모 편집" onClick={e => e.stopPropagation()}>
+    <div className="sheet-backdrop"
+      onPointerDown={e => { downOnBackdrop.current = e.target === e.currentTarget; }}
+      onClick={e => { if (downOnBackdrop.current && e.target === e.currentTarget) onClose(); }}>
+      <div className="sheet" role="dialog" aria-label="메모 편집">
         <textarea autoFocus value={text} placeholder="메모"
           onChange={e => { setText(e.target.value); saver.queue({ text: e.target.value }); }} />
         <input type="url" inputMode="url" value={url} placeholder="링크 (선택)"
