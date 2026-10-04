@@ -47,7 +47,7 @@ button.danger { color: var(--danger); }
 /* 카드 = 작은 종이 카드. 작성자는 모서리에 찍힌 실링 왁스 도장 색으로 구분 */
 .card { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 14px 28px 12px 14px; box-shadow: var(--shadow); }
 .card::before { content: ""; position: absolute; top: -6px; left: 12px; width: 12px; height: 12px; border-radius: 50%; background: var(--author); box-shadow: 0 0 0 2px var(--card); }
-.card p { margin: 0; font-family: var(--memo); font-size: 15px; font-weight: 350; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
+.card p { margin: 0; font-family: var(--memo); font-size: 15px; font-weight: 350; line-height: 1.6; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
 .card.done { opacity: .5; }
 .card.done p { text-decoration: line-through; }
 .card a { position: absolute; top: 8px; right: 6px; text-decoration: none; }

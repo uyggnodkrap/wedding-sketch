@@ -133,7 +133,7 @@ export function CanvasView({ cards, links, selectedId, selectedLinkId, onLinkTap
               <g key={l.id} className={l.id === selectedLinkId ? 'selected' : undefined}>
                 <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} />
                 <line className="hit" data-link-id={l.id} x1={a.x} y1={a.y} x2={b.x} y2={b.y} />
-                {l.style === 'arrow' && <polygon points="-16,-7 0,0 -16,7" transform={`translate(${tip.x} ${tip.y}) rotate(${tip.angle})`} />}
+                {l.style === 'arrow' && <polygon points="-10,-4.5 0,0 -10,4.5" transform={`translate(${tip.x} ${tip.y}) rotate(${tip.angle})`} />}
               </g>
             );
           })}
