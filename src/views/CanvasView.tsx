@@ -4,7 +4,7 @@ import { CardView } from '../cards/CardView';
 import { arrowTip, CARD_W, isDrag, startsGesture, type View } from './geometry';
 
 const CARD_H_EST = 60; // 측정 전 첫 렌더용
-const ARROW_GAP = 3; // 화살촉 끝과 카드 테두리 사이 여백
+const ARROW_GAP = -1; // 화살촉 끝을 카드 밑으로 1px 넣어 틈 없이 붙임 (카드가 SVG 위에 그려져 가려짐)
 
 type Gesture =
   | { kind: 'pan'; pointerId: number; sx: number; sy: number; ox: number; oy: number; moved: boolean }
