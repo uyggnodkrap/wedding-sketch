@@ -4,8 +4,6 @@ import { supabase } from '../lib/supabase';
 
 export function AuthGate({ children }: { children: (user: User) => ReactNode }) {
   const [session, setSession] = useState<Session | null | undefined>(undefined);
-  const [allowed, setAllowed] = useState<boolean | undefined>(undefined);
-  const userId = session?.user.id;
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
@@ -13,27 +11,10 @@ export function AuthGate({ children }: { children: (user: User) => ReactNode }) 
     return () => data.subscription.unsubscribe();
   }, []);
 
-  useEffect(() => {
-    setAllowed(undefined);
-    if (!userId) return;
-    supabase.from('allowed_emails').select('email')
-      .then(({ data, error }) => setAllowed(!error && data.length > 0));
-  }, [userId]);
-
   if (session === undefined) return null;
 
+  // 계정은 관리자만 만들 수 있으므로 로그인했다면 승인된 사용자
   if (!session) return <Login />;
-
-  if (allowed === undefined) return null;
-
-  if (!allowed) {
-    return (
-      <main className="center">
-        <p>접근 권한이 없는 계정입니다<br /><span className="muted">{session.user.email}</span></p>
-        <button onClick={() => supabase.auth.signOut()}>로그아웃</button>
-      </main>
-    );
-  }
 
   return <>{children(session.user)}</>;
 }
