@@ -2,6 +2,7 @@ export type Card = {
   id: string;
   text: string;
   url: string | null;
+  color: string | null; // palette.ts key, null이면 작성자 색
   done: boolean;
   x: number;
   y: number;

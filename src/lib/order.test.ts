@@ -4,7 +4,7 @@ import type { Card } from '../cards/types';
 
 const card = (id: string, sort_order: number, created_at = '2026-01-01T00:00:00Z'): Card => ({
   id, text: '', url: null, done: false, x: 0, y: 0, sort_order,
-  author_id: 'u', created_at, updated_at: created_at,
+  color: null, author_id: 'u', created_at, updated_at: created_at,
 });
 const list = [card('a', 0), card('b', 1), card('c', 2)];
 

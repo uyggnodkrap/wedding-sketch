@@ -35,17 +35,17 @@ button.danger { color: var(--danger); }
 .canvas { position: fixed; inset: 0; overflow: hidden; touch-action: none; background-image: radial-gradient(var(--line) 1px, transparent 1px); background-size: 24px 24px; }
 .canvas-layer { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
 .canvas-card { position: absolute; width: 160px; user-select: none; -webkit-user-select: none; }
-.canvas-card.selected .card { outline: 3px solid var(--accent); outline-offset: 0; }
+.canvas-card.selected .card { outline: 2px solid var(--fg); outline-offset: 0; }
 .links { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
 .links line { stroke: var(--muted); stroke-width: 1.5; }
 .links polygon { fill: var(--muted); }
-.links .selected line { stroke: var(--accent); stroke-width: 3; }
-.links .selected polygon { fill: var(--accent); }
+.links .selected line { stroke: var(--fg); stroke-width: 2; }
+.links .selected polygon { fill: var(--fg); }
 .links line.hit { stroke: transparent; stroke-width: 20; pointer-events: stroke; }
 .empty { position: fixed; top: 45%; width: 100%; text-align: center; color: var(--muted); pointer-events: none; }
 
 /* 카드 = 작은 종이 카드. 작성자는 모서리에 찍힌 실링 왁스 도장 색으로 구분 */
-.card { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 14px 28px 12px 14px; box-shadow: var(--shadow); }
+.card { position: relative; background: var(--card); border: 1px solid color-mix(in srgb, var(--author) 55%, var(--line)); border-radius: 4px; padding: 14px 28px 12px 14px; box-shadow: var(--shadow); }
 .card::before { content: ""; position: absolute; top: -6px; left: 12px; width: 12px; height: 12px; border-radius: 50%; background: var(--author); box-shadow: 0 0 0 2px var(--card); }
 .card p { margin: 0; font-family: var(--memo); font-size: 15px; font-weight: 350; line-height: 1.6; white-space: pre-wrap; word-break: keep-all; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
 .card.done { opacity: .5; }
@@ -64,6 +64,9 @@ button.danger { color: var(--danger); }
 .sheet textarea, .sheet input[type="url"] { font-size: 16px; color: inherit; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px; width: 100%; }
 .sheet input[type="url"] { font-family: inherit; }
 .sheet textarea:focus, .sheet input:focus, .center input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.swatches { display: flex; flex-wrap: wrap; gap: 10px; }
+.swatch { width: 32px; height: 32px; min-height: 0; padding: 0; border-radius: 50%; border: 3px solid var(--bg); box-shadow: 0 0 0 1px var(--line); }
+.swatch[aria-pressed="true"] { border-color: var(--bg); box-shadow: 0 0 0 2px var(--fg); }
 .sheet-actions { display: flex; justify-content: space-between; }
 
 /* 태블릿/PC: 편집 시트를 왼쪽 전체 높이 패널로 */

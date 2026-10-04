@@ -45,7 +45,7 @@ export function useCards(userId: string) {
   const create = useCallback((x: number, y: number, sortOrder: number): string => {
     const now = new Date().toISOString();
     const card: Card = {
-      id: crypto.randomUUID(), text: '', url: null, done: false, x, y,
+      id: crypto.randomUUID(), text: '', url: null, color: null, done: false, x, y,
       sort_order: sortOrder, author_id: userId, created_at: now, updated_at: now,
     };
     setCards(s => ({ ...s, [card.id]: card }));

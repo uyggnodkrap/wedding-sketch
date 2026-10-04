@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Card } from './types';
 import { createSaver } from '../lib/saver';
 import { normalizeUrl } from '../lib/url';
+import { PALETTE } from './palette';
 
 type Props = {
   card: Card;
@@ -36,6 +37,12 @@ export function EditSheet({ card, update, remove, onClose }: Props) {
           onChange={e => { setText(e.target.value); saver.queue({ text: e.target.value }); }} />
         <input type="url" inputMode="url" value={url} placeholder="링크 (선택)"
           onChange={e => { setUrl(e.target.value); saver.queue({ url: normalizeUrl(e.target.value) }); }} />
+        <div className="swatches" role="group" aria-label="동그라미 색">
+          {PALETTE.map(p => (
+            <button key={p.key} className="swatch" style={{ background: p.hex }} aria-label={p.name} title={p.name}
+              aria-pressed={card.color === p.key} onClick={() => update(card.id, { color: p.key })} />
+          ))}
+        </div>
         <label>
           <input type="checkbox" checked={card.done} onChange={e => update(card.id, { done: e.target.checked })} /> 완료
         </label>

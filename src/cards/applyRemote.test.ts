@@ -4,7 +4,7 @@ import type { Card, CardsState, Link } from './types';
 
 const card = (id: string, text = ''): Card => ({
   id, text, url: null, done: false, x: 0, y: 0, sort_order: 0,
-  author_id: 'u', created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z',
+  color: null, author_id: 'u', created_at: '2026-01-01T00:00:00Z', updated_at: '2026-01-01T00:00:00Z',
 });
 const state: CardsState = { a: card('a', 'old'), b: card('b') };
 

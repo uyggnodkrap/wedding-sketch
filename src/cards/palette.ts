@@ -13,3 +13,5 @@ export const PALETTE = [
 export type PaletteKey = (typeof PALETTE)[number]['key'];
 
 export const paletteHex = (key: PaletteKey) => PALETTE.find(p => p.key === key)!.hex;
+// DB 값은 아무 문자열일 수 있으므로 모르는 key면 undefined
+export const cardHex = (key: string | null) => PALETTE.find(p => p.key === key)?.hex;

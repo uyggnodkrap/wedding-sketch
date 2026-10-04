@@ -5,7 +5,7 @@ import { arrowTip, CARD_W, isDoubleTap, isDrag, startsGesture, type View } from 
 
 const CARD_H_EST = 60; // 측정 전 첫 렌더용
 const ARROW_GAP = -1; // 화살촉 끝을 카드 밑으로 1px 넣어 틈 없이 붙임 (카드가 SVG 위에 그려져 가려짐)
-const HIGHLIGHT_W = 3; // 하이라이트 외곽선 두께 (index.css .canvas-card.selected .card outline과 맞출 것)
+const HIGHLIGHT_W = 2; // 하이라이트 외곽선 두께 (index.css .canvas-card.selected .card outline과 맞출 것)
 
 type Gesture =
   | { kind: 'pan'; pointerId: number; linkId?: string; sx: number; sy: number; ox: number; oy: number; moved: boolean }
